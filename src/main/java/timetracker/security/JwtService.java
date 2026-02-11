@@ -12,18 +12,13 @@ import java.util.Date;
 @Service
 public class JwtService {
 
-    // ⚠️ I prod: legg i env-var
-    private static final String SECRET =
-            "CHANGE_ME_TO_A_LONG_RANDOM_SECRET_32+_CHARS";
+    private static final String SECRET = System.getenv("JWT_SECRET");
 
     private static final long EXPIRATION_SECONDS = 60 * 60 * 24; // 24h
 
     private final SecretKey key =
             Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
 
-    /* ======================
-       CREATE TOKEN
-       ====================== */
     public String createToken(String userId, String username) {
         Instant now = Instant.now();
 
@@ -36,9 +31,7 @@ public class JwtService {
                 .compact();
     }
 
-    /* ======================
-       VERIFY TOKEN
-       ====================== */
+
     public JwtClaims verify(String token) {
         try {
             Claims claims = Jwts.parserBuilder()

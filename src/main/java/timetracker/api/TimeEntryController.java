@@ -65,14 +65,14 @@ public class TimeEntryController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
     }
-    @DeleteMapping("/delete")
+    @DeleteMapping("/delete/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public void delete(@RequestBody DeleteTimeEntryRequest req, @AuthenticationPrincipal UserPrincipal me){
+    public void delete(@PathVariable UUID id, @AuthenticationPrincipal UserPrincipal me){
         if (me == null) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         try{
-            boolean deleted = service.delete(me.userId(), req.id());
+            boolean deleted = service.delete(me.userId(), id);
             if(!deleted){
-               throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Kunne ikke slette TimeEntry med id: " + req.id());
+               throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Kunne ikke slette TimeEntry med id: " + id);
             }
         } catch(IllegalArgumentException e){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
@@ -90,14 +90,6 @@ public class TimeEntryController {
         }
     }
 
-    public record GetRangeRequest(
-        LocalDate from,
-        LocalDate to)
-    {}
-
-    public record DeleteTimeEntryRequest(
-        UUID id)
-    {}
     public record CreateTimeEntryRequest(
         LocalDate date,
         LocalTime start,

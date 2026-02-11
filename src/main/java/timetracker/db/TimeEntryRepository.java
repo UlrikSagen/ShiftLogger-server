@@ -69,7 +69,7 @@ public class TimeEntryRepository {
     }
 
     public List<TimeEntryDto> findByUserIdAndRange(UUID userId, LocalDate from, LocalDate to){
-        return jdbc.query("SELECT id, user_id, entry_date, start_time, end_time, created_at, last_edit FROM time_entries WHERE user_id = ? AND entry_date >= ? AND entry_date < ?",
+        return jdbc.query("SELECT id, user_id, entry_date, start_time, end_time, created_at, last_edit FROM time_entries WHERE user_id = ? AND entry_date >= ? AND entry_date <= ?",
             ROW_MAPPER,
             userId, from, to
             ); 
