@@ -64,6 +64,21 @@ public class TimeEntryController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
     }
+    @DeleteMapping("/delete")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public boolean update(@RequestBody DeleteTimeEntryRequest req, @AuthenticationPrincipal UserPrincipal me){
+        if (me == null) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        try{
+            boolean deleted = service.delete(me.userId(), req.id());
+
+            return deleted;
+        } catch(IllegalArgumentException e){
+            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, e.getMessage(), e);
+        }
+    }
+    public record DeleteTimeEntryRequest(
+        UUID id)
+    {}
     public record CreateTimeEntryRequest(
         LocalDate date,
         LocalTime start,

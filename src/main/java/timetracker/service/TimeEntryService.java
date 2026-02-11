@@ -42,4 +42,8 @@ public class TimeEntryService {
         }
         return repo.update(id, userId, date, start, end);
     }
+
+    public boolean delete(UUID userId, UUID id){
+        return repo.delete(userId, id);
+    }
 }
