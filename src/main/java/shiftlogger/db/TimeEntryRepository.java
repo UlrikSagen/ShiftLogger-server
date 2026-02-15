@@ -1,9 +1,10 @@
-package timetracker.db;
+package shiftlogger.db;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import timetracker.dto.*;
+
+import shiftlogger.dto.*;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;

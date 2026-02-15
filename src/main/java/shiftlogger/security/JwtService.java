@@ -1,4 +1,4 @@
-package timetracker.security;
+package shiftlogger.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;

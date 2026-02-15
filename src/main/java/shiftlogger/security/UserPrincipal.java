@@ -1,4 +1,4 @@
-package timetracker.security;
+package shiftlogger.security;
 
 import java.util.UUID;
 

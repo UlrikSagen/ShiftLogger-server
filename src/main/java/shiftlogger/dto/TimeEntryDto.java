@@ -1,4 +1,4 @@
-package timetracker.dto;
+package shiftlogger.dto;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

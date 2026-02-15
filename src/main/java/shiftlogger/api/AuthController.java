@@ -1,12 +1,12 @@
-package timetracker.api;
+package shiftlogger.api;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import timetracker.db.UserRepository;
-import timetracker.security.JwtService;
+import shiftlogger.db.UserRepository;
+import shiftlogger.security.JwtService;
 
 import java.util.UUID;
 
@@ -43,13 +43,13 @@ public class AuthController {
         }
 
         String hash = passwordEncoder.encode(req.password());
-        UUID id = UUID.randomUUID();
-
+        UUID userId = UUID.randomUUID();
         try {
-            users.insert(id, req.username(), hash);
-            return new RegisterResponse(id, req.username());
+            users.insert(userId, req.username(), hash);
+            System.out.println("HEI fra register. alt OK!");
+            return new RegisterResponse(userId, req.username());
         } catch (Exception e) {
-            // typisk UNIQUE constraint på username
+            System.out.println("hei fra register. feilet." + e.getMessage());
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT,
                     "username already exists",
@@ -88,7 +88,7 @@ public class AuthController {
     }
 
     public record RegisterRequest(String username, String password) {}
-    public record RegisterResponse(UUID id, String username) {}
+    public record RegisterResponse(UUID userId, String username) {}
 
     public record LoginRequest(String username, String password) {}
     public record LoginResponse(String token) {}

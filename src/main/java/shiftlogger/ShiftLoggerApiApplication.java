@@ -1,11 +1,11 @@
-package timetracker;
+package shiftlogger;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class TimetrackerApiApplication{
+public class ShiftLoggerApiApplication{
 	public static void main(String[] args){
-		SpringApplication.run(TimetrackerApiApplication.class, args);
+		SpringApplication.run(ShiftLoggerApiApplication.class, args);
 	}
 }

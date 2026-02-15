@@ -1,4 +1,4 @@
-package timetracker.db;
+package shiftlogger.db;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;

@@ -1,4 +1,4 @@
-package timetracker.api;
+package shiftlogger.api;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;

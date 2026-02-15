@@ -1,9 +1,9 @@
-package timetracker.service;
+package shiftlogger.service;
 
 import org.springframework.stereotype.Service;
-import timetracker.db.TimeEntryRepository;
 
-import timetracker.dto.*;
+import shiftlogger.db.TimeEntryRepository;
+import shiftlogger.dto.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

@@ -1,115 +1,101 @@
-package timetracker.api;
+    package shiftlogger.api;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.UUID;
+    import java.time.LocalDate;
+    import java.time.LocalTime;
+    import java.util.List;
+    import java.util.UUID;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+    import org.springframework.http.HttpStatus;
+    import org.springframework.web.bind.annotation.*;
+    import org.springframework.web.server.ResponseStatusException;
 
-import timetracker.db.TimeEntryRepository;
-import timetracker.dto.TimeEntryDto;
-import timetracker.security.UserPrincipal;
-import timetracker.service.TimeEntryService;
+    import shiftlogger.db.TimeEntryRepository;
+    import shiftlogger.dto.TimeEntryDto;
+    import shiftlogger.security.UserPrincipal;
+    import shiftlogger.service.TimeEntryService;
 
-@RestController
-@RequestMapping("/entries")
-public class TimeEntryController {
+    import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
-    private final TimeEntryService service;
+    @RestController
+    @RequestMapping("/entries")
+    public class TimeEntryController {
 
-    public TimeEntryController(TimeEntryService service) {
-        this.service = service;
-    }
+        private final TimeEntryService service;
 
-    @PostMapping("/create")
-    @ResponseStatus(HttpStatus.CREATED)
-    public TimeEntryDto create(@RequestBody CreateTimeEntryRequest req, @AuthenticationPrincipal UserPrincipal me) {
-        if (me == null) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-        try {
-            TimeEntryRepository.TimeEntryRow saved = service.create(me.userId(), req.date(), req.start(), req.end());
-
-            return new TimeEntryDto(
-                    saved.id(),
-                    saved.userId(),
-                    saved.date(),
-                    saved.start(),
-                    saved.end(),
-                    saved.createdAt(),
-                    saved.lastEdit()
-            );
-        } catch (IllegalArgumentException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        public TimeEntryController(TimeEntryService service) {
+            this.service = service;
         }
-    }
-    @PutMapping("/update")
-    @ResponseStatus(HttpStatus.OK)
-    public TimeEntryDto update(@RequestBody UpdateTimeEntryRequest req, @AuthenticationPrincipal UserPrincipal me) {
-        if (me == null) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-        try {
-            TimeEntryRepository.TimeEntryRow saved = service.update(me.userId(),req.id(), req.date(), req.start(), req.end());
 
-            return new TimeEntryDto(
-                    saved.id(),
-                    saved.userId(),
-                    saved.date(),
-                    saved.start(),
-                    saved.end(),
-                    saved.createdAt(),
-                    saved.lastEdit()
-            );
-        } catch (IllegalArgumentException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
-        }
-    }
-    @DeleteMapping("/delete/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public void delete(@PathVariable UUID id, @AuthenticationPrincipal UserPrincipal me){
-        if (me == null) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-        try{
-            boolean deleted = service.delete(id, me.userId());
-            if(!deleted){
-               throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Kunne ikke slette TimeEntry med id: " + id);
+        @PostMapping()
+        @ResponseStatus(HttpStatus.CREATED)
+        public TimeEntryDto create(@RequestBody TimeEntryRequest req, @AuthenticationPrincipal UserPrincipal me) {
+            if (me == null) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+            try {
+                TimeEntryRepository.TimeEntryRow saved = service.create(me.userId(), req.date(), req.start(), req.end());
+
+                return new TimeEntryDto(
+                        saved.id(),
+                        saved.userId(),
+                        saved.date(),
+                        saved.start(),
+                        saved.end(),
+                        saved.createdAt(),
+                        saved.lastEdit()
+                );
+            } catch (IllegalArgumentException e) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
             }
-        } catch(IllegalArgumentException e){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
-    }
+        @PutMapping("/{id}")
+        public TimeEntryDto update(@PathVariable UUID id, @RequestBody TimeEntryRequest req, @AuthenticationPrincipal UserPrincipal me) {
+            if (me == null) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+            try {
+                TimeEntryRepository.TimeEntryRow saved = service.update(me.userId(),id, req.date(), req.start(), req.end());
 
-    @GetMapping("/getrange")
-    @ResponseStatus(HttpStatus.OK)
-    public List<TimeEntryDto> getRange(@RequestParam LocalDate from, @RequestParam LocalDate to, @AuthenticationPrincipal UserPrincipal me){
-        if (me == null) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-        try{
-            return service.getByUserIdAndRange(me.userId(), from, to);
-        } catch(IllegalArgumentException e){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+                return new TimeEntryDto(
+                        saved.id(),
+                        saved.userId(),
+                        saved.date(),
+                        saved.start(),
+                        saved.end(),
+                        saved.createdAt(),
+                        saved.lastEdit()
+                );
+            } catch (IllegalArgumentException e) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+            }
         }
-    }
-
-    @GetMapping("/getbyuser")
-    @ResponseStatus(HttpStatus.OK)
-    public List<TimeEntryDto> getByUser(@AuthenticationPrincipal UserPrincipal me){
-        if (me == null) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-        try{
-            return service.getByUserId(me.userId());
-        } catch(IllegalArgumentException e){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        @DeleteMapping("/{id}")
+        public void delete(@PathVariable UUID id, @AuthenticationPrincipal UserPrincipal me){
+            if (me == null) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+            try{
+                boolean deleted = service.delete(id, me.userId());
+                if(!deleted){
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Kunne ikke slette TimeEntry med id: " + id);
+                }
+            } catch(IllegalArgumentException e){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+            }
         }
-    }
 
-    public record CreateTimeEntryRequest(
-        LocalDate date,
-        LocalTime start,
-        LocalTime end) 
-    {}
-    public record UpdateTimeEntryRequest(
-        UUID id,
-        LocalDate date,
-        LocalTime start,
-        LocalTime end)
-    {}
-}
+        @GetMapping()
+        public List<TimeEntryDto> getRange(@RequestParam(required = false) LocalDate from, @RequestParam(required = false) LocalDate to, @AuthenticationPrincipal UserPrincipal me){
+            if (me == null) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+            try{
+                if (from != null && to != null){
+                    return service.getByUserIdAndRange(me.userId(), from, to);
+                }
+                else{
+                    return service.getByUserId(me.userId());
+                }
+            } catch(IllegalArgumentException e){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+            }
+        }
+
+        public record TimeEntryRequest(
+            LocalDate date,
+            LocalTime start,
+            LocalTime end) 
+        {}
+    }
